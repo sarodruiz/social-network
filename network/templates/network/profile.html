@@ -1,0 +1,27 @@
+{% extends "network/posts.html" %}
+{% load static %}
+
+{% block header %}
+<h1>Profile</h1>
+<h2>{{ profile.username }}</h2>
+
+<!-- FOLLOWS -->
+{% if user.is_authenticated %}
+    {% if user.username != profile.username %}
+    <form action="{% url 'follow' profile.username %}" method="POST">
+        {% csrf_token %}
+        {% if user not in profile.followers.all %}
+        <input type="submit" value="Follow">
+        {% else %}
+        <input type="submit" value="Unfollow">
+        {% endif %}
+    </form>
+    {% endif %}
+{% endif %}
+<h5>Followers: {{ profile.followers.count }}</h5>
+<h5>Following: {{ profile.following.count }}</h5>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'network/like.js' %}"></script>
+{% endblock %}

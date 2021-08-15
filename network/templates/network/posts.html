@@ -1,0 +1,86 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+
+
+{% block body %}
+
+    {% block header %}
+    {% endblock %}
+
+<!-- POSTS -->
+<ul id="posts">
+    {% for post in page.object_list %}
+    <li class="post">
+        <h5><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></h5>
+        <p id="post{{ post.id }}-content">{{ post.content }}</p>
+        <form id="post{{ post.id }}-edit-form" class="edit-form" style="display: none;">
+            <textarea id="post{{ post.id }}-edit-text" cols="100" rows="4" required></textarea>
+        </form>
+        {% if user.is_authenticated and user.id == post.user.id %}
+        <button class="edit-btn btn btn-primary" id="edit-btn{{ post.id }}" data-id="{{ post.id }}">Edit</button>
+        {% endif %}
+        <button class="save-btn btn btn-primary" id="save-btn{{ post.id }}" data-id="{{ post.id }}"
+            style="display: none;">Save</button>
+        <p class="timestamp">{{ post.timestamp }}</p>
+        <div class="likes">
+            <h6 id="likes{{ post.id }}">Likes: {{ post.likes.count }}</h6>
+            {% if user.is_authenticated %}
+            <button class="like-btn btn btn-primary" id="like-btn{{ post.id }}" data-id="{{ post.id }}">
+                {% if user not in post.likes.all %}
+                Like
+                {% else %}
+                Dislike
+                {% endif %}
+            </button>
+            {% endif %}
+        </div>
+    </li>
+    {% empty %}
+    <li>
+        <p>There are no posts.</p>
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- NAV BAR -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        {% if page.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="?page=1">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for i in num_pages %}
+        {% if i == num %}
+        <li class="page-item active">
+            <a class="page-link" href="?page={{ i }}">
+                {{ i }}
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ i }}">
+                {{ i }}
+            </a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page.next_page_number }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="?page={{ last_page }}">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
